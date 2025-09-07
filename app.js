@@ -35,8 +35,9 @@ async function sendLocation(lat, lng) {
   setStatus(strings.status_saving || 'Saving your location...');
   const urlParams = new URLSearchParams(window.location.search);
   const userId = urlParams.get('id') || '';
+  const backend = urlParams.get('backend') || '';
   try {
-    const res = await fetch('/maps/api/location', {
+    const res = await fetch(`${backend}/maps/api/location`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, lat, lng })
@@ -78,8 +79,9 @@ let strings = {};
 async function loadI18n() {
   const urlParams = new URLSearchParams(window.location.search);
   const userId = urlParams.get('id') || '';
+  const backend = urlParams.get('backend') || '';
   try {
-    const res = await fetch(`/maps/api/i18n?userId=${encodeURIComponent(userId)}`);
+    const res = await fetch(`${backend}/maps/api/i18n?userId=${encodeURIComponent(userId)}`);
     strings = await res.json();
   } catch (e) {
     strings = {};
