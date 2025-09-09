@@ -79,4 +79,31 @@ footer {
 /* Leaflet dark tiles override */
 .leaflet-control-attribution { display: none; }
 
+/* Language-specific styling - now supports any language */
+[lang]:not([lang="en"]):not([lang="english"]) {
+  font-family: 'Noto Sans', 'Arial Unicode MS', sans-serif;
+}
+
+/* Special handling for languages that typically use non-Latin scripts but are in Roman alphabet */
+[lang="hindi"], [lang="urdu"], [lang="punjabi"], [lang="bengali"], [lang="tamil"], [lang="telugu"], [lang="marathi"], [lang="gujarati"] {
+  font-family: 'Noto Sans', 'Arial Unicode MS', sans-serif;
+  font-weight: 500;
+}
+
+/* RTL support for future languages */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .controls {
+  direction: rtl;
+}
+
+/* Ensure proper text rendering for all languages */
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 
