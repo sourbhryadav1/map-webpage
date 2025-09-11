@@ -69,7 +69,6 @@
       function setCoords(lat, lng) {
         const text = `lat: ${lat.toFixed(6)}, lng: ${lng.toFixed(6)}`;
         coordsEl.textContent = text;
-        copyBtn.disabled = false;
       }
 
       shareBtn.addEventListener('click', async () => {
