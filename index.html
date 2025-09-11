@@ -53,6 +53,14 @@
         return params.get(name);
       }
 
+      function sanitizeBase(urlStr){
+        if (!urlStr) return '';
+        let u = (urlStr + '').trim();
+        // remove trailing slash
+        if (u.endsWith('/')) u = u.slice(0, -1);
+        return u;
+      }
+
       function setStatus(text, ok=false) {
         statusEl.textContent = text;
         statusEl.className = 'status ' + (ok ? 'ok' : 'err');
@@ -78,17 +86,23 @@
           else updateMarker(latitude, longitude);
           setStatus('Sending to server…');
           try {
-            const apiBase = getQueryParam('backend');
-            const postUrl = (apiBase ? apiBase.replace(/\/$/, '') : '') + '/api/location';
+            const apiBase = sanitizeBase(getQueryParam('backend'));
+            const postUrl = (apiBase ? apiBase : '') + '/api/location';
             const res = await fetch(postUrl || '/api/location', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ user_id: userId, latitude, longitude })
             });
-            if (!res.ok) throw new Error('Failed to save');
+            if (!res.ok) {
+              const text = await res.text().catch(() => '');
+              throw new Error(`Failed (${res.status}) ${text}`);
+            }
+            const data = await res.json().catch(() => ({}));
             setStatus('Location saved successfully.', true);
+            console.log('Saved OK', { postUrl, data });
           } catch (e) {
-            setStatus('Could not save location. Please try again.', false);
+            console.error('Save error', e);
+            setStatus(`Could not save location. ${e && e.message ? e.message : ''}`, false);
           }
         }, (err) => {
           setStatus(err.message || 'Could not get location.', false);
@@ -112,7 +126,7 @@
       // bootstrap
       (function init(){
         // Read according to required format: ?id=<user_id>&backend=<url>
-        userId = getQueryParam('id');
+        userId = (getQueryParam('id') || '').trim();
         if (!userId) setStatus('Missing user id.', false);
         // Attempt to show approximate map using browser geolocation (no post yet)
         if (navigator.geolocation) {
